@@ -1,0 +1,9 @@
+Igualar um slice a outro, não copia o slice, isso quer dizer que se alterar um, altera o original (usar função copy)
+As chaves dos maps tem que ser do mesmo tipo. Se uma é int, todas devem ser int.
+
+Lookup: recuperação de um valor de um mapa
+
+Funções:
+
+copy(destino, origem) //Copia um slice ou array para outro
+delete(nomeMapa, chave) //Serve para deletar uma chave de um mapa
