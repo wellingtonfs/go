@@ -37,7 +37,6 @@ func main(){
 	var oo Operacao
 	oo = Soma{1, 1}
 
-
 	fmt.Println(op.Calcular(), po.Calcular(), oo.Calcular())
 
 }
