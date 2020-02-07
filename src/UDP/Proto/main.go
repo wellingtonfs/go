@@ -7,7 +7,8 @@ import(
 	"net"
 )
 
-func Enviar(nome, nomeL, cor string, qtd int64, cnn *net.UDPConn) {
+//ou *net.UDPConn
+func Enviar(nome, nomeL, cor string, qtd int64, cnn net.Conn) {
 	eq := &equipe.Equipe{
 		NomeEquipe: nome,
 		NomeLider: nomeL,
@@ -23,6 +24,7 @@ func Enviar(nome, nomeL, cor string, qtd int64, cnn *net.UDPConn) {
 	cnn.Write(binario)
 }
 
+/*
 func Resposta(cnn *net.UDPConn) bool{
 	fmt.Printf("\nEnviando...... ")
 
@@ -34,10 +36,11 @@ func Resposta(cnn *net.UDPConn) bool{
 		return true
 	}
 	return false
-}
+}*/
 
 func main(){
-	Cnn, _ := net.DialUDP("udp", nil, &net.UDPAddr{IP:[]byte{127,0,0,1}, Port:5000, Zone:""})
+	//Cnn, _ := net.DialUDP("udp", nil, &net.UDPAddr{IP:[]byte{127,0,0,1}, Port:5000, Zone:""})
+	Cnn, _ := net.Dial("udp", "127.0.0.1:5000")
 
 	defer Cnn.Close()
 
@@ -55,10 +58,10 @@ func main(){
 		fmt.Scan(&cor)
 
 		Enviar(nome, nomeL, cor, qtd, Cnn)
-		if Resposta(Cnn){
+		/*if Resposta(Cnn){
 			fmt.Println("OK\n")
 		}else{
 			fmt.Println("Erro!\n")
-		}
+		}*/
 	}
 }
