@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package equipe;
+
+message equipe{
+    string nomeEquipe = 1;
+    string nomeLider = 2;
+    int64 numComponentes = 3;
+    string corEquipe = 4;
+}
