@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"net"
 	"log"
-	"github.com/golang/protobuf/proto"
-	"UDP/Proto/Equipe"
+	//"github.com/golang/protobuf/proto"
+	//"UDP/Proto/Equipe"
 )
 
 func main(){
-	Cnn, erro := net.ListenPacket("udp", ":5000")
+	Cnn, erro := net.ListenPacket("udp", ":4050")
 
 	if erro != nil{
 		log.Fatal(erro)
@@ -22,22 +22,23 @@ func main(){
 
 		n, addr, _ := Cnn.ReadFrom(buffer)
 
-		var recebido equipe.Equipe
+		//var recebido equipe.Equipe
 
-		err := proto.Unmarshal(buffer[0:n], &recebido)
+		//err := proto.Unmarshal(buffer[0:n], &recebido)
 
-		if err != nil{
-			log.Fatal(err)
-		}
+		//if err != nil{
+		//	log.Fatal(err)
+		//}
 
 		fmt.Println("...........IP: ", addr, ":")
+		fmt.Println(string(buffer[0:n]))
 
-		fmt.Println("Nome Equipe:", recebido.GetNomeEquipe())
-		fmt.Println("Lider:", recebido.GetNomeLider())
-		fmt.Println("Integrantes:", recebido.GetNumComponentes())
-		fmt.Println("Cor:", recebido.GetCorEquipe())
-		fmt.Println("------------------\n")
+		//fmt.Println("Nome Equipe:", recebido.GetNomeEquipe())
+		//fmt.Println("Lider:", recebido.GetNomeLider())
+		//fmt.Println("Integrantes:", recebido.GetNumComponentes())
+		//fmt.Println("Cor:", recebido.GetCorEquipe())
+		//fmt.Println("------------------\n")
 
-		Cnn.WriteTo([]byte("ok"), addr)
+		//Cnn.WriteTo([]byte("ok"), addr)
 	}
 }
