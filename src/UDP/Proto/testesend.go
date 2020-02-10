@@ -4,20 +4,30 @@ import "fmt"
 import "UDP/Proto/Drivers"
 
 func main(){
-	var msg string
-	fmt.Scan(&msg)
-
 	Sender := communication.CommandSender()
 	Sender.SetPort(3123)
-	erro := Sender.createSocket()
+	var erro error = Sender.CreateSocket()
 
 	if erro != nil{
-		fmt.Println()//terminar aqq
+		fmt.Println("[Erro Sender] ", erro)
 	}
 
 	Received := communication.CommandReceiver()
 	Received.SetPort(3124)
-	Received.createSocket()
+	erro = Received.CreateSocket()
 
-	fmt.Println()
+	if erro != nil{
+		fmt.Println("[Erro Receiver] ", erro)
+	}
+
+	var msg string
+	for{
+		fmt.Printf("Digite algo para mandar: ")
+		fmt.Scan(&msg)
+
+		Sender.Send([]byte(msg))
+
+		fmt.Println("Esperando resposta...")
+		fmt.Println(string(Received.Received()))
+	}
 }

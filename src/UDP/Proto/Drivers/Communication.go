@@ -1,21 +1,20 @@
 package communication
 
-package main
-
-//import "fmt"
 import "net"
-import "strconv"
+import "strconv" 
 
 type AddressSend struct{
 	ip string
 	port int
+	mode string
 	cnn net.Conn
 }
 
 type AddressRec struct{
 	ip string
 	port int
-	cnn net.PacketConn
+	mode string
+	cnnUDP net.PacketConn
 }
 
 type Socket interface{
@@ -23,7 +22,7 @@ type Socket interface{
 	SetPort(newPort int)
 	GetAddr() string
 	GetPort() int
-	createSocket() error
+	CreateSocket() error
 	Close() error
 	Send(bytes []byte)
 	Received() []byte
@@ -32,13 +31,13 @@ type Socket interface{
 //function init
 func CommandSender() Socket{
 	var conn Socket
-	conn = &AddressSend{"127.0.0.1", 5000, nil}
+	conn = &AddressSend{"127.0.0.1", 5000, "udp", nil}
 	return conn
 }
 
 func CommandReceiver() Socket{
 	var conn Socket
-	conn = &AddressRec{"127.0.0.1", 5000, nil}
+	conn = &AddressRec{"127.0.0.1", 5000, "udp", nil}
 	return conn
 }
 
@@ -82,15 +81,15 @@ func (a AddressRec) GetPort() int{
 }
 
 //create sockets for sender and receiver
-func (addr *AddressSend) createSocket() error{
+func (addr *AddressSend) CreateSocket() error{
 	var err error
-	addr.cnn, err = net.Dial("udp", addr.ip+":"+strconv.Itoa(addr.port))
+	addr.cnn, err = net.Dial(addr.mode, addr.ip+":"+strconv.Itoa(addr.port))
 	return err
 }
 
-func (addr *AddressRec) createSocket() error{
+func (addr *AddressRec) CreateSocket() error{
 	var err error
-	addr.cnn, err = net.ListenPacket("udp", addr.ip+":"+strconv.Itoa(addr.port))
+	addr.cnnUDP, err = net.ListenPacket(addr.mode, addr.ip+":"+strconv.Itoa(addr.port))
 	return err
 }
 
@@ -99,7 +98,8 @@ func (addr AddressSend) Close() error{
 }
 
 func (addr AddressRec) Close() error{
-	return addr.cnn.Close()
+	addr.cnnUDP.Close()
+	return addr.cnnUDP.Close()
 }
 
 func (addr AddressSend) Send(bytes []byte){
@@ -108,30 +108,11 @@ func (addr AddressSend) Send(bytes []byte){
 
 func (addr AddressRec) Received() []byte{
 	buffer := make([]byte, 1024)
-	n, _, _ := addr.cnn.ReadFrom(buffer)
+	var n int
+	n, _, _ = addr.cnnUDP.ReadFrom(buffer)
 	return buffer[0:n]
 }
 
 //methods implemented but not used (because senders do not receive bytes and receivers do not send bytes)
 func (addr AddressSend) Received() []byte{return []byte(nil)}
 func (addr AddressRec) Send(bytes []byte){}
-
-/*
-func main(){
-	CS := CommandReceiver()
-
-	defer CS.Close()
-
-	CS.SetAddr("localhost")
-	CS.SetPort(4050)
-	err := CS.createSocket()
-	if err == nil{
-		fmt.Println("Socket UDP criado com sucesso! Address: ", CS.GetAddr()+":"+strconv.Itoa(CS.GetPort()))
-	}else{
-		fmt.Println(err)
-	}
-
-	fmt.Println(string(CS.Received()))
-
-}
-*/
