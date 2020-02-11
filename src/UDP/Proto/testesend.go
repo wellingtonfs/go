@@ -2,32 +2,35 @@ package main
 
 import "fmt"
 import "UDP/Proto/Drivers"
+import "bufio"
+import "os"
 
 func main(){
 	Sender := communication.CommandSender()
 	Sender.SetPort(3123)
+	//Sender.ChangeMode("tcp")
 	var erro error = Sender.CreateSocket()
 
 	if erro != nil{
 		fmt.Println("[Erro Sender] ", erro)
 	}
 
-	Received := communication.CommandReceiver()
-	Received.SetPort(3124)
-	erro = Received.CreateSocket()
+	defer Sender.Close()
 
-	if erro != nil{
-		fmt.Println("[Erro Receiver] ", erro)
-	}
-
-	var msg string
 	for{
 		fmt.Printf("Digite algo para mandar: ")
-		fmt.Scan(&msg)
 
-		Sender.Send([]byte(msg))
+		msg, _ := bufio.NewReader(os.Stdin).ReadString('\n')
 
-		fmt.Println("Esperando resposta...")
-		fmt.Println(string(Received.Received()))
+		b := []byte(msg)
+		Sender.Send(b[0:len(b)-1])
+
+
+		rec, er := Sender.Received()
+		if er == nil{
+			fmt.Println("[ECO] ", string(rec))
+		}else{
+			fmt.Println("[Erro] ", er)
+		}
 	}
 }
